@@ -101,8 +101,9 @@ public class Main_TeleOp extends OpMode {
         setMotorRunMode(back_right);
         setMotorRunMode(flywheelR);
         setMotorRunMode(flywheelL);
-        setMotorRunMode(intake);
-        setMotorRunMode(helper_motor);
+
+        intake.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
+        helper_motor.setMode(DcMotor.RunMode.RUN_WITHOUT_ENCODER);
     }
 
     private void setMotorRunMode(DcMotorEx motor) {

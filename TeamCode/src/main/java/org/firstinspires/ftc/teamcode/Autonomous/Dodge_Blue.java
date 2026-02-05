@@ -28,16 +28,50 @@ public class Dodge_Blue extends LinearOpMode {
     private VisionPortal visionPortal;
 
     private static final int TICKS_PER_REVOLUTION = 28;
-    private final double SHOOTER_POWER = 0.75;
-    private static int DESIRED_FLYWHEEL_SPEED = 3900;
+    private final double SHOOTER_POWER = 0.6;
+    private static int DESIRED_FLYWHEEL_SPEED = 3300;
+    private static int CLOSE_SERVO_SPEED = 3000;
     private final double INTAKE_SHOOT_POWER = -0.6;
     private final double OPEN_SERVO_POS = 0.25;
+    private final double CLOSE_SERVO_POS = 0.0;
     private final double AUTO_AIM_GAIN = 0.015;
 
     public double cm(double centimeters) { return centimeters / 2.54; }
 
     private double calculateRPM(DcMotorEx motor) {
         return (motor.getVelocity() / TICKS_PER_REVOLUTION) * 60.0;
+    }
+
+    public Action Shoot(){
+        return telemetry -> {
+
+            int balls = 3;
+            int current_balls = 0;
+
+            double rightFlywheelSpeed;
+            double leftFlywheelSpeed;
+
+            rightFlywheelSpeed = calculateRPM(flywheelR);
+            leftFlywheelSpeed = calculateRPM(flywheelL);
+
+            flywheelL.setPower(SHOOTER_POWER);
+            flywheelR.setPower(SHOOTER_POWER);
+
+            if (rightFlywheelSpeed >= DESIRED_FLYWHEEL_SPEED && leftFlywheelSpeed >= DESIRED_FLYWHEEL_SPEED) {
+                shooter_servo.setPosition(OPEN_SERVO_POS);
+            } else if (rightFlywheelSpeed <= CLOSE_SERVO_SPEED && leftFlywheelSpeed <= CLOSE_SERVO_SPEED) {
+                shooter_servo.setPosition(CLOSE_SERVO_POS);
+            }
+
+            if(rightFlywheelSpeed < 3000 || leftFlywheelSpeed < 3000){
+                ++current_balls;
+            }
+
+            if(current_balls == balls){
+                return false;
+            }
+            return true;
+        };
     }
 
     @Override
@@ -65,7 +99,8 @@ public class Dodge_Blue extends LinearOpMode {
 
         // Build the Path
         Action trajectory = drive.actionBuilder(initialPose)
-                .lineToX(cm(20))
+                .strafeToLinearHeading(new Vector2d(110, 0), Math.toRadians(0))
+                .stopAndAdd(Shoot())
                 .build();
 
         waitForStart();

@@ -51,7 +51,7 @@ public class Test_autonomous extends LinearOpMode {
     private static final double PARK_Y = 0;
 
     // AprilTag configuration
-    private static final int TARGET_TAG_ID = 1;  // Change based on alliance color
+    private static final int TARGET_TAG_ID = 20;  // Change based on alliance color
 
     @Override
     public void runOpMode() {
