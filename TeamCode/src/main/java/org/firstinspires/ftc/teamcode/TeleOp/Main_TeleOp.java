@@ -17,6 +17,8 @@ import org.firstinspires.ftc.vision.apriltag.AprilTagDetection;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.ExposureControl;
 import org.firstinspires.ftc.robotcore.external.hardware.camera.controls.GainControl;
 import java.util.concurrent.TimeUnit;
+import com.acmerobotics.dashboard.FtcDashboard;
+import com.acmerobotics.dashboard.telemetry.MultipleTelemetry;
 
 @TeleOp(name = "Main_TeleOp")
 public class Main_TeleOp extends OpMode {
@@ -30,7 +32,6 @@ public class Main_TeleOp extends OpMode {
     private int CLOSE_SHOOTER_SERVO = 1500;
 
     private static final double AUTO_AIM_GAIN = 0.01;
-    private static final double INTAKE_POWER = -0.3;
     private static final double DESIRED_DISTANCE_INCHES = 78.7;
     private static final double DISTANCE_GAIN = 0.02;
     private static final double MAX_AUTO_SPEED = 0.5;
@@ -49,6 +50,9 @@ public class Main_TeleOp extends OpMode {
 
     @Override
     public void init() {
+        // Voeg MultipleTelemetry toe voor FTC Dashboard
+        telemetry = new MultipleTelemetry(telemetry, FtcDashboard.getInstance().getTelemetry());
+
         initializeHardware();
         initializeVision();
         configureMotors();
@@ -176,7 +180,7 @@ public class Main_TeleOp extends OpMode {
     }
 
     public void driveRobotCentric(double forward, double strafe, double rotate) {
-        // Robot-oriented drive - use inputs directly without field transformation [1](#4-0)
+        // Robot-oriented drive - use inputs directly without field transformation
         double frontLeftPower = forward + strafe + rotate;
         double frontRightPower = forward - strafe - rotate;
         double backLeftPower = forward - strafe + rotate;
@@ -240,7 +244,8 @@ public class Main_TeleOp extends OpMode {
         telemetry.addData("Shooter Servo Pos", shooter_servo.getPosition());
         telemetry.addData("Intake Power", helper_motor.getPower());
         telemetry.addData("SHOOTER_POWER", SHOOTER_POWER);
-
+        telemetry.addData("rightFlywheelSpeed", rightFlywheelSpeed);
+        telemetry.addData("leftFlywheelSpeed", leftFlywheelSpeed);
         telemetry.addData("Shooter RPM", "R:%.1f L:%.1f", rightFlywheelSpeed, leftFlywheelSpeed);
         telemetry.addData("Flywheel Goal", DESIRED_FLYWHEEL_SPEED);
         telemetry.addData("Drive RPM", "FL:%.1f FR:%.1f BL:%.1f BR:%.1f",
@@ -254,7 +259,7 @@ public class Main_TeleOp extends OpMode {
         if (gamepad1.x) {
             AprilTagDetection targetTag = findFirstValidTag();
             if (targetTag != null) {
-                telemetry.addData("Auto-Aim", "ID %d, Bearing: %.1fÂ°", targetTag.id, targetTag.ftcPose.bearing);
+                telemetry.addData("Auto-Aim", "ID %d, Bearing: %.1f°", targetTag.id, targetTag.ftcPose.bearing);
             }
         }
     }
