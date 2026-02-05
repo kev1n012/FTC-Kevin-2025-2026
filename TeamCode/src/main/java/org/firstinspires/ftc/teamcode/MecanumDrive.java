@@ -55,22 +55,20 @@ import java.util.List;
 public final class MecanumDrive {
     public static class Params {
         // IMU orientation
-        // TODO: fill in these values based on
-        //   see https://ftc-docs.firstinspires.org/en/latest/programming_resources/imu/imu.html?highlight=imu#physical-hub-mounting
         public RevHubOrientationOnRobot.LogoFacingDirection logoFacingDirection =
                 RevHubOrientationOnRobot.LogoFacingDirection.RIGHT;
         public RevHubOrientationOnRobot.UsbFacingDirection usbFacingDirection =
                 RevHubOrientationOnRobot.UsbFacingDirection.UP;
 
         // drive model parameters
-        public double inPerTick = 0.0257;
-        public double lateralInPerTick = 0.0264628;
-        public double trackWidthTicks = 319.16;
+        public double inPerTick = 0.00052;
+        public double lateralInPerTick = 0.00035979900422821576;
+        public double trackWidthTicks = 27965.06446315933;
 
         // feedforward parameters (in tick units)
-        public double kS = 1.46;
-        public double kV = 0.0037;
-        public double kA = 0.000555;
+        public double kS = 0.00010457651086520367;
+        public double kV = 0.00009652589880273242;
+        public double kA = 0.0000265;
 
         // path profile parameters (in inches)
         public double maxWheelVel = 50;
@@ -78,17 +76,17 @@ public final class MecanumDrive {
         public double maxProfileAccel = 50;
 
         // turn profile parameters (in radians)
-        public double maxAngVel = Math.PI; // shared with path
+        public double maxAngVel = Math.PI;
         public double maxAngAccel = Math.PI;
 
         // path controller gains
-        public double axialGain = 5.0;
-        public double lateralGain = 0.0;
-        public double headingGain = 20.0; // shared with turn
+        public double axialGain = 1.5;
+        public double lateralGain = 1.5;
+        public double headingGain = 1.0;
 
         public double axialVelGain = 0.0;
         public double lateralVelGain = 0.0;
-        public double headingVelGain = 0.02; // shared with turn
+        public double headingVelGain = 0.0;
     }
 
     public static Params PARAMS = new Params();
@@ -253,8 +251,8 @@ public final class MecanumDrive {
                 PARAMS.logoFacingDirection, PARAMS.usbFacingDirection));
 
         voltageSensor = hardwareMap.voltageSensor.iterator().next();
-
-        localizer = new DriveLocalizer(pose);
+        //TODO make sure this is correct
+        localizer = new TwoDeadWheelLocalizer(hardwareMap, lazyImu.get(), PARAMS.inPerTick, pose);
 
         FlightRecorder.write("MECANUM_PARAMS", PARAMS);
     }
